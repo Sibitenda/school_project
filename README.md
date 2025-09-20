@@ -115,12 +115,3 @@ school_project/
 * Implement full CRUD functionality
 * Use Django Admin for quick data management
 * Organize templates and static files in a real project
-
----
-
-
-This project is open-source and free to use for educational purposes.
-
----
-
-👉 Do you want me to also generate a **requirements.txt** file for this project so it matches what you actually installed (Django + optional packages)?
