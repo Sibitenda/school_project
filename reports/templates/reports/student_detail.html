@@ -1,0 +1,27 @@
+<!-- <h2>{{ student.name }}</h2>
+<p>Email: {{ student.email }}</p>
+
+<h3>Grades</h3>
+<ul>
+  {% for grade in grades %}
+    <li>{{ grade.subject }}: {{ grade.score }}</li>
+  {% empty %}
+    <li>No grades recorded.</li>
+  {% endfor %}
+</ul> -->
+<h2>{{ student.name }}</h2>
+<p>Email: {{ student.email }}</p>
+
+<a href="{% url 'student_update' student.pk %}">Edit</a> |
+<a href="{% url 'student_delete' student.pk %}">Delete</a>
+
+<h3>Grades</h3>
+<ul>
+  {% for grade in grades %}
+    <li>{{ grade.subject }}: {{ grade.score }}</li>
+  {% empty %}
+    <li>No grades recorded.</li>
+  {% endfor %}
+</ul>
+
+<a href="{% url 'grade_create' student.pk %}">+ Add Grade</a>
