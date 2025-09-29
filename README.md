@@ -5,9 +5,9 @@ This app demonstrates **CRUD operations** as well as **Authentication & Role-Bas
 
 ---
 
-## ✨ Features
+## Features
 
-### 🔐 Authentication
+### Authentication
 
 * User registration & login with roles:
 
@@ -18,18 +18,18 @@ This app demonstrates **CRUD operations** as well as **Authentication & Role-Bas
 * Admins can create new users (students, lecturers, admins) and manage them.
 * Support ticket system with **status updates** (Open, In Progress, Closed).
 
-### 📘 Student Features
+### Student Features
 
 * Enroll in available courses
 * Submit and track support tickets
 * View personal achievements
 
-### 🎓 Lecturer Features
+### Lecturer Features
 
 * View courses they teach
 * See enrolled students
 
-### 🛠️ Admin Features
+### Admin Features
 
 * Create, edit, delete **users** (student, lecturer, admin)
 * Manage **courses, clubs, opportunities, achievements, tickets**
@@ -37,7 +37,7 @@ This app demonstrates **CRUD operations** as well as **Authentication & Role-Bas
 
 ---
 
-## ⚙️ Requirements
+## Requirements
 
 * Python 3.10+ (via Anaconda or standalone install)
 * Django 5.x
@@ -49,16 +49,16 @@ Optional:
 
 ---
 
-## 🚀 Setup Instructions
+## Setup Instructions
 
-### 1️⃣ Clone the repository
+### 1️ Clone the repository
 
 ```bash
 git clone https://github.com/Sibitenda/school_project.git
 cd school_project
 ```
 
-### 2️⃣ Create a virtual environment (using conda or venv)
+### 2️ Create a virtual environment (using conda or venv)
 
 ```bash
 conda create -n django_env python=3.11
@@ -72,26 +72,26 @@ python -m venv venv
 venv\Scripts\activate   # Windows
 ```
 
-### 3️⃣ Install dependencies
+### 3️ Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4️⃣ Run migrations
+### 4️ Run migrations
 
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
 
-### 5️⃣ Create a superuser (to access Django admin)
+### 5️ Create a superuser (to access Django admin)
 
 ```bash
 python manage.py createsuperuser
 ```
 
-### 6️⃣ Start the development server
+### 6️ Start the development server
 
 ```bash
 python manage.py runserver
@@ -101,7 +101,7 @@ Visit [http://127.0.0.1:8000/](http://127.0.0.1:8000/) and log in.
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 
 ```
 school_project/
@@ -123,7 +123,7 @@ school_project/
 
 ---
 
-## 📸 Screenshots (to add later)
+##  Screenshots (to add later)
 
 * **Student Dashboard** – enrolled courses, achievements, support tickets.
 * **Lecturer Dashboard** – courses taught, students list.
@@ -131,7 +131,7 @@ school_project/
 
 ---
 
-## 🎯 Learning Outcomes
+##  Learning Outcomes
 
 * Understand Django’s **MTV (Model-Template-View)** workflow
 * Implement full **CRUD functionality**
