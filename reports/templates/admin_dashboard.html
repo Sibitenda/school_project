@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Admin Dashboard</h2>
+<p>Welcome, {{ user.username }}!</p>
+
+<!-- ===================== -->
+<!-- Manage Users Section  -->
+<!-- ===================== -->
+<h4>Manage Users</h4>
+<form method="post">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="create_user">
+
+  {{ user_form.as_p }}
+
+  <label for="role">Role:</label>
+  <select name="role" required>
+    <option value="student">Student</option>
+    <option value="lecturer">Lecturer</option>
+    <option value="admin">Admin</option>
+  </select>
+
+  <button class="btn btn-primary" type="submit">Add User</button>
+</form>
+
+<h5>Existing Students</h5>
+<ul>
+  {% for s in students %}
+    <li>
+      {{ s.name }} ({{ s.user.email }})
+      <form method="post" style="display:inline;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="delete_user">
+        <input type="hidden" name="profile_id" value="{{ s.id }}">
+        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+      </form>
+    </li>
+  {% empty %}
+    <li>No students found.</li>
+  {% endfor %}
+</ul>
+
+<h5>Existing Lecturers</h5>
+<ul>
+  {% for l in lecturers %}
+    <li>
+      {{ l.name }} ({{ l.user.email }})
+      <form method="post" style="display:inline;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="delete_user">
+        <input type="hidden" name="profile_id" value="{{ l.id }}">
+        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+      </form>
+    </li>
+  {% empty %}
+    <li>No lecturers found.</li>
+  {% endfor %}
+</ul>
+
+<h5>Existing Admins</h5>
+<ul>
+  {% for a in admins %}
+    <li>
+      {{ a.name }} ({{ a.user.email }})
+      <form method="post" style="display:inline;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="delete_user">
+        <input type="hidden" name="profile_id" value="{{ a.id }}">
+        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+      </form>
+    </li>
+  {% empty %}
+    <li>No admins found.</li>
+  {% endfor %}
+</ul>
+
+<hr>
+
+<!-- ===================== -->
+<!-- Manage Courses Section -->
+<!-- ===================== -->
+<h4>Manage Courses</h4>
+<form method="post">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="course_form">
+  {{ course_form.as_p }}
+  <button class="btn btn-success" type="submit">Add Course</button>
+</form>
+
+<ul>
+  {% for course in courses %}
+    <li>{{ course.name }} ({{ course.code }}) - {{ course.lecturer }}</li>
+  {% endfor %}
+</ul>
+
+<hr>
+
+<!-- ===================== -->
+<!-- Manage Clubs Section -->
+<!-- ===================== -->
+<h4>Manage Clubs</h4>
+<form method="post">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="club_form">
+  {{ club_form.as_p }}
+  <button class="btn btn-info" type="submit">Add Club</button>
+</form>
+
+<ul>
+  {% for club in clubs %}
+    <li>{{ club.name }} ({{ club.meeting_time }})</li>
+  {% endfor %}
+</ul>
+
+<hr>
+
+<!-- ===================== -->
+<!-- Manage Opportunities Section -->
+<!-- ===================== -->
+<h4>Career Opportunities</h4>
+<form method="post">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="opportunity_form">
+  {{ opportunity_form.as_p }}
+  <button class="btn btn-warning" type="submit">Add Opportunity</button>
+</form>
+
+<ul>
+  {% for opp in opportunities %}
+    <li>{{ opp.company }} - {{ opp.role }} (Deadline: {{ opp.deadline }})</li>
+  {% endfor %}
+</ul>
+
+<hr>
+
+<!-- ===================== -->
+<!-- Manage Achievements Section -->
+<!-- ===================== -->
+<h4>Achievements</h4>
+<form method="post">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="achievement_form">
+  {{ achievement_form.as_p }}
+  <button class="btn btn-secondary" type="submit">Add Achievement</button>
+</form>
+
+<ul>
+  {% for ach in achievements %}
+    <li>{{ ach.student }} - {{ ach.title }}</li>
+  {% endfor %}
+</ul>
+
+<hr>
+
+<!-- ===================== -->
+<!-- Support Tickets Section -->
+<!-- ===================== -->
+<h4>Support Tickets</h4>
+
+<!-- Admin creates a new ticket -->
+<form method="post">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="ticket_form">
+  {{ ticket_form.as_p }}
+  <button class="btn btn-primary" type="submit">Add Ticket</button>
+</form>
+
+<!-- Existing tickets -->
+<ul>
+  {% for ticket in tickets %}
+    <li>
+      {{ ticket.title }} ({{ ticket.status }}) - by {{ ticket.student }}
+      <form method="post" style="display:inline;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="update_ticket_status">
+        <input type="hidden" name="ticket_id" value="{{ ticket.id }}">
+        <select name="status">
+          <option value="Open" {% if ticket.status == "Open" %}selected{% endif %}>Open</option>
+          <option value="In Progress" {% if ticket.status == "In Progress" %}selected{% endif %}>In Progress</option>
+          <option value="Closed" {% if ticket.status == "Closed" %}selected{% endif %}>Closed</option>
+        </select>
+        <button type="submit" class="btn btn-sm btn-success">Update</button>
+      </form>
+    </li>
+  {% empty %}
+    <li>No tickets found.</li>
+  {% endfor %}
+</ul>
+
+{% endblock %}

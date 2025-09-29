@@ -70,6 +70,31 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "school_project.wsgi.application"
 
+# -------------------------------
+# Authentication redirects
+# -------------------------------
+# LOGIN_URL = "login"                # where users are redirected if not logged in
+# LOGIN_REDIRECT_URL = '/dashboard/'
+# LOGOUT_REDIRECT_URL = '/accounts/login/'
+LOGIN_URL = "/accounts/login/"
+LOGIN_REDIRECT_URL = "home"   # after login, go to home_redirect()
+LOGOUT_REDIRECT_URL = "login"
+
+# LOGIN_REDIRECT_URL = "dashboard"   # after successful login
+# LOGOUT_REDIRECT_URL = "login"      # after logout
+
+# -------------------------------
+# Static files
+# -------------------------------
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]  # project-level static files
+STATIC_ROOT = BASE_DIR / "staticfiles"   # for collectstatic (production)
+
+# -------------------------------
+# Media files (uploads)
+# -------------------------------
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases

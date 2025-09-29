@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Student Dashboard</h2>
+  <p>Welcome, {{ user.username }}!</p>
+
+<hr>
+
+<h3>Your Courses</h3>
+{% if courses %}
+  <ul>
+    {% for course in courses %}
+      <li>{{ course.name }} ({{ course.code }}) - Lecturer: {{ course.lecturer }}</li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>You are not enrolled in any courses yet.</p>
+{% endif %}
+
+<hr>
+
+<h3>Your Achievements</h3>
+{% if achievements %}
+  <ul>
+    {% for ach in achievements %}
+      <li><strong>{{ ach.title }}</strong> - {{ ach.description }}</li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No achievements yet.</p>
+{% endif %}
+
+<hr>
+
+<h3>Your Support Tickets</h3>
+{% if tickets %}
+  <ul>
+    {% for t in tickets %}
+      <li>{{ t.title }} - Status: {{ t.status }}</li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No support tickets found.</p>
+{% endif %}
+
+{% endblock %}

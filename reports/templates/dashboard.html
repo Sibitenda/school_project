@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Student Portal Dashboard{% endblock %}
+{% block content %}
+
+<h1>Student Portal</h1>
+
+<!-- Group 0: Students & Grades -->
+<section>
+  <h2>Students & Grades</h2>
+  <form method="post" action="{% url 'dashboard' %}">
+      {% csrf_token %}
+      {{ student_form.as_p }}
+      <button class="btn btn-primary">Add Student</button>
+  </form>
+  <ul class="list-group mt-3">
+      {% for s in students %}
+          <li class="list-group-item">{{ s.name }} ({{ s.email }})</li>
+      {% endfor %}
+  </ul>
+</section>
+
+<hr>
+
+<!-- Group 1: Courses -->
+<section>
+  <h2>Courses & Enrollment</h2>
+  <form method="post" action="{% url 'dashboard' %}">
+      {% csrf_token %}
+      {{ course_form.as_p }}
+      <button class="btn btn-primary">Add Course</button>
+  </form>
+  <ul class="list-group mt-3">
+      {% for c in courses %}
+          <li class="list-group-item">{{ c.code }} - {{ c.name }}</li>
+      {% endfor %}
+  </ul>
+</section>
+
+<hr>
+
+<!-- Group 2: Clubs -->
+<section>
+  <h2>Clubs & Student Life</h2>
+  <form method="post" action="{% url 'dashboard' %}">
+      {% csrf_token %}
+      {{ club_form.as_p }}
+      <button class="btn btn-primary">Create Club</button>
+  </form>
+  <ul class="list-group mt-3">
+      {% for club in clubs %}
+          <li class="list-group-item">{{ club.name }} - {{ club.description }}</li>
+      {% endfor %}
+  </ul>
+</section>
+
+<hr>
+
+<!-- Group 3: Careers -->
+<section>
+  <h2>Career Opportunities</h2>
+  <form method="post" action="{% url 'dashboard' %}">
+      {% csrf_token %}
+      {{ opportunity_form.as_p }}
+      <button class="btn btn-primary">Post Opportunity</button>
+  </form>
+  <ul class="list-group mt-3">
+      {% for opp in opportunities %}
+          <li class="list-group-item">{{ opp.company }} - {{ opp.role }} (Deadline: {{ opp.deadline }})</li>
+      {% endfor %}
+  </ul>
+</section>
+
+<hr>
+
+<!-- Group 4: Achievements -->
+<section>
+  <h2>Achievements</h2>
+  <form method="post" action="{% url 'dashboard' %}">
+      {% csrf_token %}
+      {{ achievement_form.as_p }}
+      <button class="btn btn-primary">Add Achievement</button>
+  </form>
+  <ul class="list-group mt-3">
+      {% for a in achievements %}
+          {% if a.is_public %}
+              <li class="list-group-item"><strong>{{ a.title }}</strong> - {{ a.description }}</li>
+          {% endif %}
+      {% endfor %}
+  </ul>
+</section>
+
+<hr>
+
+<!-- Group 5: Support -->
+<section>
+  <h2>Support & Services</h2>
+  <form method="post" action="{% url 'dashboard' %}">
+      {% csrf_token %}
+      {{ ticket_form.as_p }}
+      <button class="btn btn-primary">Open Ticket</button>
+  </form>
+  <table class="table table-striped mt-3">
+      <tr><th>Title</th><th>Status</th><th>Created</th></tr>
+      {% for t in tickets %}
+          <tr>
+              <td>{{ t.title }}</td>
+              <td>{{ t.get_status_display }}</td>
+              <td>{{ t.created_at }}</td>
+          </tr>
+      {% endfor %}
+  </table>
+</section>
+
+{% endblock %}

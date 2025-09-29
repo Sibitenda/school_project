@@ -1,0 +1,21 @@
+<!-- <form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <label for="role">Register as:</label>
+  <select name="role" required>
+    <option value="student">Student</option>
+    <option value="lecturer">Lecturer</option>
+  </select>
+  <button type="submit">Sign up</button>
+</form> -->
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <label for="role">Register as:</label>
+  <select name="role" required>
+    <option value="student">Student</option>
+    <option value="lecturer">Lecturer</option>
+    <option value="admin">Admin</option>
+  </select>
+  <button type="submit">Sign up</button>
+</form>

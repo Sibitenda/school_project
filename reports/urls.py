@@ -1,12 +1,35 @@
+
+# # from django.contrib import admin
+# # from django.urls import path
+# # from . import views
+
+# # # urlpatterns = [
+# # #     path("", views.dashboard, name="dashboard"),
+# # # ]
+# # urlpatterns = [
+# #     path("dashboard/", views.redirect_dashboard, name="dashboard"),
+# #     path("dashboard/student/", views.student_dashboard, name="student_dashboard"),
+# #     path("dashboard/lecturer/", views.lecturer_dashboard, name="lecturer_dashboard"),
+# #     path("dashboard/admin/", views.admin_dashboard, name="admin_dashboard"),
+# # ]
+
 # from django.urls import path
+# from . import views
+
+# urlpatterns = [
+#     path("", views.home_redirect, name="home"),
+#     path("student/", views.student_dashboard, name="student_dashboard"),
+#     path("lecturer/", views.lecturer_dashboard, name="lecturer_dashboard"),
+#     path("admin_dashboard/", views.admin_dashboard, name="admin_dashboard"),
+#     path("register/", views.register, name="register"),
+# ]
 from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("", views.student_list, name="student_list"),
-    path("<int:pk>/", views.student_detail, name="student_detail"),
-    path("add/", views.student_create, name="student_create"),
-    path("<int:pk>/edit/", views.student_update, name="student_update"),
-    path("<int:pk>/delete/", views.student_delete, name="student_delete"),
-    path("<int:student_pk>/grades/add/", views.grade_create, name="grade_create"),
+    path("register/", views.register, name="register"),
+    path("student/", views.student_dashboard, name="student_dashboard"),
+    path("lecturer/", views.lecturer_dashboard, name="lecturer_dashboard"),
+    path("admin_dashboard/", views.admin_dashboard, name="admin_dashboard"),
+    path("", views.home_redirect, name="home"),
 ]

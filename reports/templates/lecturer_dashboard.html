@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <h2>Lecturer Dashboard</h2>
+  <p>Welcome, {{ user.username }}!</p>
+
+  <h4>Courses You Teach</h4>
+  <ul>
+    {% for course in courses %}
+      {% if course.lecturer == user.username %}
+        <li>{{ course.code }} - {{ course.name }}</li>
+      {% endif %}
+    {% empty %}
+      <li>You are not teaching any courses yet.</li>
+    {% endfor %}
+  </ul>
+
+  <h4>Course Reviews</h4>
+  <ul>
+    {% for course in courses %}
+      {% if course.lecturer == user.username %}
+        {% for review in course.coursereview_set.all %}
+          <li>{{ review.student.username }}: {{ review.comment }} ({{ review.rating }}/5)</li>
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
