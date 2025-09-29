@@ -1,32 +1,55 @@
-# Student Report Management System (Django CRUD App)
+# Student Report Management System (Django CRUD App + Authentication)
 
-A simple Django project for managing students and their grades in a school setting.
-This app demonstrates the **CRUD (Create, Read, Update, Delete)** operations using Django’s **Models, Views, Templates, and Forms**.
-
----
-
-## Features
-
-* Add, edit, delete students
-* Record and view grades per student
-* List all students with details
-* User-friendly Django Admin panel
-* SQLite database (default)
+A Django project for managing students, courses, achievements, and support tickets in a school setting.
+This app demonstrates **CRUD operations** as well as **Authentication & Role-Based Dashboards** using Django’s **Models, Views, Templates, and Forms**.
 
 ---
 
-##  Requirements
+## ✨ Features
+
+### 🔐 Authentication
+
+* User registration & login with roles:
+
+  * **Students** → view/enroll courses, achievements, support tickets.
+  * **Lecturers** → manage their courses & view enrolled students.
+  * **Admins** → full CRUD on users, courses, clubs, opportunities, tickets.
+* Role-based dashboards (redirects based on user type).
+* Admins can create new users (students, lecturers, admins) and manage them.
+* Support ticket system with **status updates** (Open, In Progress, Closed).
+
+### 📘 Student Features
+
+* Enroll in available courses
+* Submit and track support tickets
+* View personal achievements
+
+### 🎓 Lecturer Features
+
+* View courses they teach
+* See enrolled students
+
+### 🛠️ Admin Features
+
+* Create, edit, delete **users** (student, lecturer, admin)
+* Manage **courses, clubs, opportunities, achievements, tickets**
+* Update ticket statuses
+
+---
+
+## ⚙️ Requirements
 
 * Python 3.10+ (via Anaconda or standalone install)
 * Django 5.x
-* (Optional)
 
-  * `django-crispy-forms` → better form styling
-  * `django-debug-toolbar` → debugging support
+Optional:
+
+* `django-crispy-forms` → better form styling
+* `django-debug-toolbar` → debugging support
 
 ---
 
-## Setup Instructions
+## 🚀 Setup Instructions
 
 ### 1️⃣ Clone the repository
 
@@ -62,7 +85,7 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
-### 5️⃣ Create a superuser (to access admin)
+### 5️⃣ Create a superuser (to access Django admin)
 
 ```bash
 python manage.py createsuperuser
@@ -74,44 +97,44 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Visit  [http://127.0.0.1:8000/students/](http://127.0.0.1:8000/students/)
+Visit [http://127.0.0.1:8000/](http://127.0.0.1:8000/) and log in.
 
 ---
 
-##  Project Structure
+## 📂 Project Structure
 
 ```
 school_project/
 │
-├── reports/              # Django app for students & grades
-│   ├── models.py         # Student, Grade models
-│   ├── views.py          # CRUD views
-│   ├── urls.py           # App routes
-│   └── templates/        # HTML templates
+├── reports/                  # Main Django app
+│   ├── models.py             # User Profile, Student, Course, etc.
+│   ├── views.py              # CRUD + authentication views
+│   ├── forms.py              # User creation, student forms, ticket forms
+│   ├── urls.py               # App routes
+│   └── templates/reports/    # Role-based dashboards
 │
-├── school_project/       # Project settings
+├── school_project/           # Project settings
 │   └── settings.py
 │
-├── db.sqlite3            # Default database
-├── manage.py             # Django CLI tool
+├── db.sqlite3                # Default database
+├── manage.py                 # Django CLI tool
 └── requirements.txt
 ```
 
 ---
 
-##  Screenshots
+## 📸 Screenshots (to add later)
 
-* **Student List** – shows all students
-* **Student Detail** – view grades per student
-* **Admin Panel** – manage records easily
-
-*(Add screenshots later after running the app)*
+* **Student Dashboard** – enrolled courses, achievements, support tickets.
+* **Lecturer Dashboard** – courses taught, students list.
+* **Admin Dashboard** – manage users, courses, clubs, tickets.
 
 ---
 
-##  Learning Outcomes
+## 🎯 Learning Outcomes
 
 * Understand Django’s **MTV (Model-Template-View)** workflow
-* Implement full CRUD functionality
-* Use Django Admin for quick data management
-* Organize templates and static files in a real project
+* Implement full **CRUD functionality**
+* Add **authentication & role-based access control**
+* Build interactive dashboards for different roles
+* Manage records both via **custom UI** and Django Admin
