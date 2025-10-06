@@ -1,30 +1,79 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
+<div class="container mt-4">
   <h2>Lecturer Dashboard</h2>
   <p>Welcome, {{ user.username }}!</p>
 
+  <!-- ==================== -->
+  <!-- Courses You Teach -->
+  <!-- ==================== -->
   <h4>Courses You Teach</h4>
   <ul>
     {% for course in courses %}
-      {% if course.lecturer == user.username %}
-        <li>{{ course.code }} - {{ course.name }}</li>
-      {% endif %}
+      <li>{{ course.code }} - {{ course.name }}</li>
     {% empty %}
       <li>You are not teaching any courses yet.</li>
     {% endfor %}
   </ul>
 
-  <h4>Course Reviews</h4>
+  <hr>
+
+  <!-- ==================== -->
+  <!-- Students List -->
+  <!-- ==================== -->
+  <h4>Your Students</h4>
   <ul>
-    {% for course in courses %}
-      {% if course.lecturer == user.username %}
-        {% for review in course.coursereview_set.all %}
-          <li>{{ review.student.username }}: {{ review.comment }} ({{ review.rating }}/5)</li>
-        {% endfor %}
-      {% endif %}
+    {% for student in students %}
+      <li>{{ student.user.username }} ({{ student.user.email }})</li>
+    {% empty %}
+      <li>No students registered yet.</li>
     {% endfor %}
   </ul>
+
+  <hr>
+
+  <!-- ==================== -->
+  <!-- Manage Marks -->
+  <!-- ==================== -->
+  <h4>Manage Marks for Your Courses</h4>
+<form method="post">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="add_mark">
+  {{ mark_form.as_p }}
+  <button type="submit" class="btn btn-primary">Add Mark</button>
+</form>
+
+<form method="post">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="export_marks_csv">
+  <button class="btn btn-outline-dark btn-sm">📥 Export Marks CSV</button>
+</form>
+
+<table class="table table-bordered table-sm">
+  <thead>
+    <tr>
+      <th>Student</th>
+      <th>Course</th>
+      <th>Score</th>
+      <th>Grade</th>
+      <th>GPA</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for mark in marks %}
+      <tr>
+        <td>{{ mark.student.name }}</td>
+        <td>{{ mark.course.code }}</td>
+        <td>{{ mark.score }}</td>
+        <td>{{ mark.grade }}</td>
+        <td>{{ mark.gpa }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5">No marks yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
 </div>
 {% endblock %}

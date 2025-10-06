@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from .models import (
-    Student, Grade,
+    Student, Grade, StudentMark,
     Course, CourseReview,
     Club, ClubPost,
     CareerOpportunity, SavedOpportunity,
@@ -10,6 +10,7 @@ from .models import (
 )
 
 from .models import Profile
+from .models import Course, StudentProfile, StudentMark
 # -------------------------------
 # Group 0: Students & Grades
 # -------------------------------
@@ -22,6 +23,69 @@ class GradeForm(forms.ModelForm):
     class Meta:
         model = Grade
         fields = ["student", "subject", "score"]
+
+# class StudentMarkForm(forms.ModelForm):
+#     class Meta:
+#         model = StudentMark
+#         fields = ["student", "course", "score"]
+
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         # Populate students and courses
+#         self.fields["student"].queryset = StudentProfile.objects.all()
+#         self.fields["course"].queryset = Course.objects.all()
+
+#         self.fields["student"].label_from_instance = (
+#             lambda obj: f"{obj.name} ({obj.registration_number})"
+#         )
+#         self.fields["course"].label_from_instance = (
+#             lambda obj: f"{obj.name} ({obj.code})"
+#         )
+# -------------------------------
+# Group 0: Students & Grades
+# -------------------------------
+# class StudentMarkForm(forms.ModelForm):
+#     class Meta:
+#         model = StudentMark
+#         fields = ["student", "course", "lecturer", "score"]
+
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         from .models import Profile, Course
+
+#         self.fields["student"].queryset = Profile.objects.filter(role="student")
+#         self.fields["lecturer"].queryset = Profile.objects.filter(role="lecturer")
+#         self.fields["course"].queryset = Course.objects.all()
+
+#         # self.fields["student"].label_from_instance = lambda obj: f"{obj.name} ({obj.user.username})"
+#         # self.fields["lecturer"].label_from_instance = lambda obj: f"{obj.name} ({obj.user.username})"
+#         # self.fields["course"].label_from_instance = lambda obj: f"{obj.name} ({obj.code})"
+
+#         self.fields["student"].label_from_instance = lambda obj: f"{getattr(obj, 'name', obj.user.username)} ({obj.user.username})"
+#         self.fields["lecturer"].label_from_instance = lambda obj: f"{getattr(obj, 'name', obj.user.username)} ({obj.user.username})"
+#         self.fields["course"].label_from_instance = lambda obj: f"{obj.name} ({obj.code})"
+class StudentMarkForm(forms.ModelForm):
+    class Meta:
+        model = StudentMark
+        fields = ["student", "course", "lecturer", "score"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from .models import Profile, Course
+
+        self.fields["student"].queryset = Profile.objects.filter(role="student")
+        self.fields["lecturer"].queryset = Profile.objects.filter(role="lecturer")
+        self.fields["course"].queryset = Course.objects.all()
+
+        self.fields["student"].label_from_instance = (
+            lambda obj: f"{obj.user.username}"
+        )
+        self.fields["lecturer"].label_from_instance = (
+            lambda obj: f"{obj.user.username}"
+        )
+        self.fields["course"].label_from_instance = (
+            lambda obj: f"{obj.code} - {obj.name}"
+        )
 
 class AdminUserCreateForm(forms.ModelForm):
     name = forms.CharField(max_length=100, required=True)
@@ -82,11 +146,29 @@ class SignUpForm(forms.ModelForm):
 # -------------------------------
 # Group 1: Courses & Enrollment
 # -------------------------------
+# class CourseForm(forms.ModelForm):
+#     class Meta:
+#         model = Course
+#         fields = ["name", "code", "credit_units", "lecturer", "students"]
+#         widgets = {"students": forms.CheckboxSelectMultiple}
+# class CourseForm(forms.ModelForm):
+#     class Meta:
+#         model = Course
+#         fields = ["name", "code", "lecturer", "students"]
+#         widgets = {"students": forms.CheckboxSelectMultiple}
+
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
         fields = ["name", "code", "credit_units", "lecturer", "students"]
-        widgets = {"students": forms.CheckboxSelectMultiple}
+        widgets = {
+            "students": forms.CheckboxSelectMultiple,  # ✅ shows all students as checkboxes
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Filter only student users (if you have a Profile with role='student')
+        self.fields["students"].queryset = User.objects.filter(profile__role="student")
 
 class CourseReviewForm(forms.ModelForm):
     class Meta:
