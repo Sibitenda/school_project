@@ -5,11 +5,16 @@
 <div class="container mt-5">
   <h1 class="text-center mb-4">Admin Dashboard</h1>
 
-  <!-- ====== Export Section ====== -->
-  <div class="text-end mb-4">
-    <a href="{% url 'export_all_data_csv' %}" class="btn btn-success">
-      Export All Data (CSV)
-    </a>
+  <!-- ====== Report Generation Buttons ====== -->
+  <div class="text-end mb-4 d-flex justify-content-end gap-2">
+    <!-- Remove export_all_data_csv since it no longer exists -->
+    <!-- <form method="post" class="d-inline">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="generate_async_reports">
+      <button type="submit" class="btn btn-info">Generate Async Student Reports</button>
+    </form> -->
+
+    
   </div>
 
   <!-- ====== USER MANAGEMENT ====== -->
@@ -37,7 +42,7 @@
             <td>Student</td>
             <td>{{ p.user.email }}</td>
             <td>
-              <form method="post" style="display:inline;">
+              <form method="post">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="delete_user">
                 <input type="hidden" name="profile_id" value="{{ p.id }}">
@@ -52,7 +57,7 @@
             <td>Lecturer</td>
             <td>{{ p.user.email }}</td>
             <td>
-              <form method="post" style="display:inline;">
+              <form method="post">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="delete_user">
                 <input type="hidden" name="profile_id" value="{{ p.id }}">
@@ -67,7 +72,7 @@
             <td>Admin</td>
             <td>{{ p.user.email }}</td>
             <td>
-              <form method="post" style="display:inline;">
+              <form method="post">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="delete_user">
                 <input type="hidden" name="profile_id" value="{{ p.id }}">
@@ -81,291 +86,82 @@
     </div>
   </div>
 
-  <!-- ====== COURSE MANAGEMENT ====== -->
+  <!-- ====== COURSE & MARK MANAGEMENT ====== -->
   <div class="card mb-4">
-    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-      <h4>Course Management</h4>
-      <a href="{% url 'export_all_data_csv' %}" class="btn btn-outline-light btn-sm">Export CSV</a>
+    <div class="card-header bg-info text-white">
+      <h4>Courses & Marks Management</h4>
     </div>
     <div class="card-body">
+
+      <!-- Add Course -->
+      <h5>Add New Course</h5>
       <form method="post" class="mb-4">
         {% csrf_token %}
         <input type="hidden" name="action" value="course_form">
         {{ course_form.as_p }}
-        <button type="submit" class="btn btn-info">Add Course</button>
+        <button type="submit" class="btn btn-success">Add Course</button>
       </form>
 
-      <h5>Existing Courses</h5>
-      <table class="table table-striped">
-        <thead><tr><th>Code</th><th>Name</th><th>Lecturer</th><th>Students</th></tr></thead>
-        <tbody>
-          {% for c in courses %}
+      <!-- Add Marks -->
+      <h5>Enter Student Marks</h5>
+      <form method="post" class="mb-4">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="student_mark_form">
+        {{ student_mark_form.as_p }}
+        <button type="submit" class="btn btn-dark">Save Mark</button>
+      </form>
+
+      <!-- Combined Table -->
+      <h5>Courses & Student Marks</h5>
+      <table class="table table-bordered table-striped table-sm">
+        <thead class="table-dark">
           <tr>
-            <td>{{ c.code }}</td>
-            <td>{{ c.name }}</td>
-            <td>{{ c.lecturer }}</td>
-            <td>
-              {% for s in c.students.all %}
-                {{ s.user.username }}{% if not forloop.last %}, {% endif %}
-              {% empty %}
-                <em>No students</em>
-              {% endfor %}
-            </td>
+            <th>Student</th>
+            <th>Course</th>
+            <th>Lecturer</th>
+            <th>Score</th>
+            <th>Grade</th>
+            <th>GPA</th>
+            <th>CPA</th>
           </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-<!-- ====== STUDENT MARKS & PERFORMANCE ====== -->
-<!-- <div class="card mb-4">
-  <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-    <h4>Student Marks & Performance</h4>
-    <a href="{% url 'export_all_data_csv' %}" class="btn btn-outline-light btn-sm">📥 Export Marks CSV</a>
-  </div>
-
-  <div class="card-body">
-    <form method="post" class="row g-3 mb-4">
-      {% csrf_token %}
-      <input type="hidden" name="action" value="student_mark_form">
-
-      <div class="col-md-4">
-        <label for="student" class="form-label fw-semibold">Student:</label>
-        {{ student_mark_form.student }}
-      </div>
-
-      <div class="col-md-4">
-        <label for="course" class="form-label fw-semibold">Course:</label>
-        {{ student_mark_form.course }}
-      </div>
-
-      <div class="col-md-3">
-        <label for="lecturer" class="form-label fw-semibold">Lecturer:</label>
-        {{ student_mark_form.lecturer }}
-      </div>
-
-      <div class="col-md-3">
-        <label for="score" class="form-label fw-semibold">Score:</label>
-        {{ student_mark_form.score }}
-      </div>
-
-      <div class="col-12 mt-3">
-        <button type="submit" class="btn btn-dark px-4">💾 Save Mark</button>
-      </div>
-    </form>
-
-    <h5 class="mt-4">All Marks</h5>
-    <table class="table table-bordered table-sm table-striped">
-      <thead class="table-dark">
-        <tr>
-          <th>Student</th>
-          <th>Course</th>
-          <th>Lecturer</th>
-          <th>Score</th>
-          <th>Grade</th>
-          <th>GPA</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for mark in marks %}
-        <tr>
-          <td>{{ mark.student.user.username }}</td>
-          <td>{{ mark.course.name }}</td>
-          <td>{{ mark.lecturer.user.username }}</td>
-          <td>{{ mark.score }}</td>
-          <td>{{ mark.grade }}</td>
-          <td>{{ mark.gpa|floatformat:2 }}</td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="6" class="text-center">No marks yet.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-
-    <hr>
-    <h5> GPA / CPA Summary by Student</h5>
-    <table class="table table-bordered table-striped table-sm">
-      <thead class="table-light">
-        <tr><th>Student</th><th>GPA</th><th>CPA</th></tr>
-      </thead>
-      <tbody>
-        {% for s in students %}
-        <tr>
-          <td>{{ s.user.username }}</td>
-          <td>{{ s.gpa|floatformat:2 }}</td>
-          <td>{{ s.cpa|floatformat:2 }}</td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="3" class="text-center">No performance data.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div>
- -->
-<!-- === COURSES & MARKS === -->
-<div class="card mb-4">
-  <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-    <h4>Courses & Marks Management</h4>
-  </div>
-  <div class="card-body">
-    
-    <!-- Add Course -->
-    <h5>Add New Course</h5>
-    <form method="post">
-      {% csrf_token %}
-      <input type="hidden" name="action" value="course_form">
-      {% csrf_token %}
-      <input type="hidden" name="action" value="student_mark_form">
-      {{ student_mark_form.as_p }}
-      <button type="submit" class="btn btn-dark">Save Mark</button>
-      <!-- {{ course_form.as_p }} -->
-      <!-- <button type="submit" class="btn btn-success">Add Course</button> -->
-    </form>
-
-    <!-- <hr> -->
-
-    <!-- Add Marks -->
-    <!-- <h5>Enter Student Marks</h5> -->
-    <!-- <form method="post">
-      {% csrf_token %}
-      <input type="hidden" name="action" value="student_mark_form">
-      {{ student_mark_form.as_p }}
-      <button type="submit" class="btn btn-dark">Save Mark</button>
-    </form> -->
-
-    <!-- <hr> -->
-
-    <!-- Display Combined Table -->
-    <h5>Courses & Student Marks</h5>
-    <table class="table table-bordered table-striped table-sm">
-      <thead class="table-dark">
-        <tr>
-          <th>Student</th>
-          <th>Course</th>
-          <th>Lecturer</th>
-          <th>Score</th>
-          <th>Grade</th>
-          <th>GPA</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for mark in marks %}
-        <tr>
-          <td>{{ mark.student.user.username }}</td>
-          <td>{{ mark.course.code }} - {{ mark.course.name }}</td>
-          <td>{{ mark.lecturer.user.username }}</td>
-          <td>{{ mark.score }}</td>
-          <td>{{ mark.grade }}</td>
-          <td>{{ mark.gpa|floatformat:2 }}</td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="6" class="text-center">No marks recorded yet.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div>
-
-  <!-- ====== CLUBS ====== -->
-  <div class="card mb-4">
-    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-      <h4>Clubs</h4>
-      <a href="{% url 'export_all_data_csv' %}" class="btn btn-outline-light btn-sm">Export CSV</a>
-    </div>
-    <div class="card-body">
-      <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="club_form">
-        {{ club_form.as_p }}
-        <button type="submit" class="btn btn-secondary">Add Club</button>
-      </form>
-      <hr>
-      <table class="table table-striped">
-        <thead><tr><th>Name</th><th>Description</th></tr></thead>
+        </thead>
         <tbody>
-          {% for club in clubs %}
-          <tr><td>{{ club.name }}</td><td>{{ club.description }}</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ====== CAREER OPPORTUNITIES ====== -->
-  <div class="card mb-4">
-    <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
-      <h4>Career Opportunities</h4>
-      <a href="{% url 'export_all_data_csv' %}" class="btn btn-outline-dark btn-sm">Export CSV</a>
-    </div>
-    <div class="card-body">
-      <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="opportunity_form">
-        {{ opportunity_form.as_p }}
-        <button type="submit" class="btn btn-warning text-dark">Add Opportunity</button>
-      </form>
-      <hr>
-      <table class="table table-striped">
-        <thead><tr><th>Company</th><th>Role</th><th>Deadline</th></tr></thead>
-        <tbody>
-          {% for o in opportunities %}
-          <tr><td>{{ o.company }}</td><td>{{ o.role }}</td><td>{{ o.deadline }}</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ====== ACHIEVEMENTS ====== -->
-  <div class="card mb-4">
-    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-      <h4>Achievements</h4>
-      <a href="{% url 'export_all_data_csv' %}" class="btn btn-outline-light btn-sm">Export CSV</a>
-    </div>
-    <div class="card-body">
-      <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="achievement_form">
-        {{ achievement_form.as_p }}
-        <button type="submit" class="btn btn-success">Add Achievement</button>
-      </form>
-      <hr>
-      <table class="table table-striped">
-        <thead><tr><th>Student</th><th>Title</th><th>Description</th></tr></thead>
-        <tbody>
-          {% for a in achievements %}
-          <tr><td>{{ a.student.user.username }}</td><td>{{ a.title }}</td><td>{{ a.description }}</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ====== SUPPORT TICKETS ====== -->
-  <div class="card mb-5">
-    <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
-      <h4>Support Tickets</h4>
-      <a href="{% url 'export_all_data_csv' %}" class="btn btn-outline-light btn-sm">Export CSV</a>
-    </div>
-    <div class="card-body">
-      <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="ticket_form">
-        {{ ticket_form.as_p }}
-        <button type="submit" class="btn btn-danger">Add Ticket</button>
-      </form>
-      <hr>
-      <table class="table table-striped">
-        <thead><tr><th>Student</th><th>Title</th><th>Status</th></tr></thead>
-        <tbody>
-          {% for t in tickets %}
-          <tr><td>{{ t.student.user.username }}</td><td>{{ t.title }}</td><td>{{ t.status }}</td></tr>
+          {% for mark in marks %}
+          <tr>
+            <td>{{ mark.student.user.username }}</td>
+            <td>{{ mark.course.code }} - {{ mark.course.name }}</td>
+            <td>{{ mark.lecturer.user.username }}</td>
+            <td>{{ mark.score }}</td>
+            <td>{{ mark.grade }}</td>
+            <td>{{ mark.gpa|floatformat:2 }}</td>
+            <td>{{ mark.cpa|floatformat:2 }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7" class="text-center">No marks recorded yet.</td></tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
   </div>
 </div>
+
+<form method="get" action="{% url 'download_processed_marks_csv' %}">
+    <button type="submit" class="btn btn-success mb-3">Download Processed Marksheet (CSV)</button>
+</form>
+<form method="post">{% csrf_token %}
+  <input type="hidden" name="action" value="generate_student_reports_zip">
+  <button class="btn btn-primary">Generate Student PDFs (ZIP)</button>
+</form>
+
+<form method="post">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="send_all_reports_email">
+  <button type="submit" class="btn btn-success">Send Reports by Email</button>
+</form>
+
+<form method="post" class="d-inline">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="upload_reports_to_cloud">
+  <button type="submit" class="btn btn-success">Push Latest Reports to Cloud</button>
+</form>
 {% endblock %}
