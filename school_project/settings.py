@@ -27,10 +27,11 @@ DEBUG = True
 
 # ALLOWED_HOSTS = []
 ALLOWED_HOSTS = [
-    "school-project-mpem.onrender.com",  # your Render domain
+    "school-project-dk22.onrender.com",  # your Render live domain
     "localhost",
     "127.0.0.1"
 ]
+
 
 
 # Application definition
