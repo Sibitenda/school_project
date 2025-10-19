@@ -158,3 +158,12 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 SUPABASE_URL = "https://pzsprgatlwireljseacu.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB6c3ByZ2F0bHdpcmVsanNlYWN1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDgxMjQwNCwiZXhwIjoyMDc2Mzg4NDA0fQ.8cclaY9WpKYkpzYOp1SadRCTG3uLi0JHIuZJixxbaA4"
+
+# For tests, use an in-memory email backend
+EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
+TEST_RUNNER = "django.test.runner.DiscoverRunner"
+# During tests, Django stores sent emails in memory (not actually sending them)
+# EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
+DEFAULT_FROM_EMAIL = "noreply@example.com"
+EMAIL_HOST_USER = "test@example.com"
+
