@@ -155,3 +155,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'nkarietn@gmail.com'
 EMAIL_HOST_PASSWORD = 'ueua pyle uzuq upxu'  # App password from Google
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+SUPABASE_URL = "https://pzsprgatlwireljseacu.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB6c3ByZ2F0bHdpcmVsanNlYWN1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDgxMjQwNCwiZXhwIjoyMDc2Mzg4NDA0fQ.8cclaY9WpKYkpzYOp1SadRCTG3uLi0JHIuZJixxbaA4"

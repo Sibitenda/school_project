@@ -39,11 +39,11 @@ from .models import (
 from reports.utils.grade_utils import (
     calculate_grade_and_gpa, calculate_gpa, calculate_cpa
 )
-from reports.utils.cloud_upload import push_all_to_cloud  # assumed available
+# from reports.utils.cloud_upload import push_all_to_cloud  # assumed available
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
-
+from reports.utils.cloud_upload import upload_to_supabase
 
 # -------------------------------
 # Helpers
@@ -411,26 +411,42 @@ def admin_dashboard(request):
 @login_required
 @user_passes_test(admin_required)
 def export_marks_csv(request):
-    response = HttpResponse(content_type="text/csv")
-    response["Content-Disposition"] = 'attachment; filename="student_marks.csv"'
-    writer = csv.writer(response)
+    buffer = io.StringIO()
+    writer = csv.writer(buffer)
     writer.writerow(["Student", "Course", "Score", "Grade", "GPA"])
+
     marks = StudentMark.objects.select_related("student", "course").all()
     for mark in marks:
         grade, gpa = calculate_grade_and_gpa(mark.score)
         student_name = getattr(mark.student, "name", None) or getattr(mark.student, "user", None)
         if hasattr(student_name, "username"):
             student_name = student_name.username
-        writer.writerow([
-            student_name,
-            getattr(mark.course, "name", str(mark.course)),
-            mark.score,
-            grade,
-            f"{gpa:.2f}"
-        ])
+        writer.writerow([student_name, getattr(mark.course, "name", str(mark.course)), mark.score, grade, f"{gpa:.2f}"])
+
+    csv_bytes = buffer.getvalue().encode("utf-8")
+    buffer.close()
+
+    timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M")
+    filename = f"student_marks_{timestamp}.csv"
+
+    # Cloud upload
+    try:
+        cloud_url = upload_to_supabase(csv_bytes, filename)
+        messages.success(request, f"☁ CSV uploaded to Supabase: {cloud_url}")
+    except Exception as e:
+        logger.exception("CSV cloud upload failed: %s", e)
+        messages.warning(request, f"CSV generated but cloud upload failed: {e}")
+
+    # Also return as direct download
+    response = HttpResponse(csv_bytes, content_type="text/csv")
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
     return response
 
 
+
+# -------------------------------
+# Download Processed Marksheet (concurrent)
+# -------------------------------
 # -------------------------------
 # Download Processed Marksheet (concurrent)
 # -------------------------------
@@ -481,14 +497,31 @@ def download_processed_marks_csv(request):
     df = pd.DataFrame(data)
     processed_df = process_student_marks_concurrent(df)
 
-    # rename for tidy export
-    processed_df = processed_df.rename(columns={"student": "Student", "course": "Course", "lecturer": "Lecturer",
-                                                "score": "Score", "grade": "Grade", "gpa": "GPA", "cpa": "CPA"})
+    processed_df = processed_df.rename(columns={
+        "student": "Student", "course": "Course", "lecturer": "Lecturer",
+        "score": "Score", "grade": "Grade", "gpa": "GPA", "cpa": "CPA"
+    })
+
     csv_buffer = io.StringIO()
     processed_df.to_csv(csv_buffer, index=False)
-    response = HttpResponse(csv_buffer.getvalue(), content_type="text/csv")
-    response["Content-Disposition"] = 'attachment; filename="processed_marks.csv"'
+    csv_bytes = csv_buffer.getvalue().encode("utf-8")  # add this
+    csv_buffer.close()
+
+    # Upload to Supabase
+    try:
+        timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M")
+        filename = f"processed_marks_{timestamp}.csv"
+        cloud_url = upload_to_supabase(csv_bytes, filename)
+        messages.success(request, f"☁ Processed CSV uploaded to Supabase: {cloud_url}")
+    except Exception as e:
+        logger.exception("CSV cloud upload failed: %s", e)
+        messages.warning(request, f"Processed CSV generated but cloud upload failed: {e}")
+
+    # Return for download too
+    response = HttpResponse(csv_bytes, content_type="text/csv")
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
     return response
+
 
 
 # -------------------------------
@@ -527,12 +560,17 @@ def generate_student_reports_zip(request):
     response["Content-Disposition"] = f'attachment; filename="{zip_filename}"'
 
     # Try uploading to cloud (best-effort). We pass name; your push_all_to_cloud may expect a path or name.
+    # Upload to Supabase
+    # Upload to Supabase
     try:
-        async_to_sync(push_all_to_cloud)(zip_filename)
-        messages.success(request, "Reports generated and uploaded to cloud (attempted).")
+        cloud_url = upload_to_supabase(zip_buffer.getvalue(), zip_filename)
+        messages.success(request, f"☁ Uploaded to Supabase: {cloud_url}")
     except Exception as e:
         logger.exception("Cloud upload failed: %s", e)
         messages.warning(request, f"Reports generated but cloud upload failed: {e}")
+
+    
+    
 
     return response
 
