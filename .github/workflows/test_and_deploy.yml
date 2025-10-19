@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    name: 🧪 Run Django Tests
+    name:  Run Django Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -42,7 +42,7 @@ jobs:
           path: .pytest_cache/
 
   deploy:
-    name: 🚀 Deploy to Render or Railway
+    name:  Deploy to Render or Railway
     needs: test
     runs-on: ubuntu-latest
     if: success()
