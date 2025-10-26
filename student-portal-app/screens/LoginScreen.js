@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, Alert, StyleSheet } from "react-native";
-import { api } from "../api/client";
+import { loginUser } from "../api/client"; // ✅ use helper function
 
 export default function LoginScreen({ navigation }) {
   const [username, setUsername] = useState("");
@@ -8,11 +8,7 @@ export default function LoginScreen({ navigation }) {
 
   const handleLogin = async () => {
     try {
-      const response = await api.post("token/", {
-        username,
-        password,
-      });
-      const { access } = response.data;
+      const { access } = await loginUser(username, password); // ✅ simplified
       Alert.alert("Success", "Login successful!");
       navigation.navigate("Dashboard", { token: access });
     } catch (error) {

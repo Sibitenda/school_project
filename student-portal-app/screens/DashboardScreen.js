@@ -1,23 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Button, StyleSheet, ScrollView } from "react-native";
-import { api } from "../api/client";
+import { fetchDashboard } from "../api/client";
 
 export default function DashboardScreen({ route, navigation }) {
   const { token } = route.params;
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    const fetchDashboard = async () => {
+    const loadData = async () => {
       try {
-        const response = await api.get("dashboard/", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setData(response.data);
+        const result = await fetchDashboard(token);
+        setData(result);
       } catch (error) {
-        console.log(error);
+        console.log("Dashboard fetch error:", error);
       }
     };
-    fetchDashboard();
+    loadData();
   }, []);
 
   return (
