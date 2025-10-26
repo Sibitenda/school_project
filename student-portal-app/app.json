@@ -4,12 +4,10 @@
     "slug": "student-portal-app",
     "version": "1.0.0",
     "orientation": "portrait",
+    "entryPoint": "./App.js",
     "icon": "./assets/images/icon.png",
-    "scheme": "studentportalapp",
     "userInterfaceStyle": "automatic",
-    "ios": {
-      "supportsTablet": true
-    },
+    "ios": { "supportsTablet": true },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -17,17 +15,8 @@
       }
     },
     "web": {
-      "favicon": "./assets/images/favicon.png",
-      "output": "single"
-    },
-    "splash": {
-      "image": "./assets/images/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "plugins": [],
-    "experiments": {
-      "reactCompiler": true
+      "output": "single",
+      "favicon": "./assets/images/favicon.png"
     }
   }
 }
