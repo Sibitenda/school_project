@@ -44,6 +44,11 @@ from reports.utils.grade_utils import (
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 from reports.utils.cloud_upload import upload_to_supabase
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from django.views.decorators.csrf import csrf_exempt
+
 
 # -------------------------------
 # Helpers
@@ -248,6 +253,25 @@ def register(request):
     else:
         form = SignUpForm()
     return render(request, "registration/register.html", {"form": form})
+
+
+@csrf_exempt
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def dashboard(request):
+    """
+    API endpoint for the mobile app dashboard.
+    Accessible via /api/dashboard/
+    """
+    user = request.user
+    return Response({
+        "profile": {
+            "name": user.username,
+            "role": "Admin" if user.is_staff else "Student"
+        },
+        "courses": [],
+        "achievements": []
+    })
 
 
 # @login_required
