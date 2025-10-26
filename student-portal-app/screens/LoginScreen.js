@@ -1,46 +1,66 @@
-import React, { useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
-import { loginUser } from '../api/client';
+import React, { useState } from "react";
+import { View, Text, TextInput, Button, Alert, StyleSheet } from "react-native";
+import { api } from "../api/client";
 
 export default function LoginScreen({ navigation }) {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
     try {
-      const data = await loginUser(username, password);
-      navigation.navigate('Dashboard', { token: data.access });
-    } catch (err) {
-      setError('Invalid username or password');
+      const response = await api.post("token/", {
+        username,
+        password,
+      });
+      const { access } = response.data;
+      Alert.alert("Success", "Login successful!");
+      navigation.navigate("Dashboard", { token: access });
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error", "Invalid credentials or server issue.");
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Student Portal Login</Text>
+      <Text style={styles.title}>🎓 Student Portal Login</Text>
       <TextInput
         style={styles.input}
         placeholder="Username"
-        onChangeText={setUsername}
         value={username}
+        onChangeText={setUsername}
+        autoCapitalize="none"
       />
       <TextInput
         style={styles.input}
         placeholder="Password"
         secureTextEntry
-        onChangeText={setPassword}
         value={password}
+        onChangeText={setPassword}
       />
-      {error ? <Text style={styles.error}>{error}</Text> : null}
       <Button title="Login" onPress={handleLogin} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 20 },
-  title: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 20 },
-  input: { borderWidth: 1, padding: 10, marginVertical: 10 },
-  error: { color: 'red', textAlign: 'center', marginBottom: 10 },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    padding: 20,
+    backgroundColor: "#f9f9f9",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 8,
+  },
 });

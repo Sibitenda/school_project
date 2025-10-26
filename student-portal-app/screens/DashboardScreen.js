@@ -1,44 +1,52 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import { fetchDashboard } from '../api/client';
+import React, { useEffect, useState } from "react";
+import { View, Text, Button, StyleSheet, ScrollView } from "react-native";
+import { api } from "../api/client";
 
-export default function DashboardScreen({ route }) {
+export default function DashboardScreen({ route, navigation }) {
   const { token } = route.params;
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    (async () => {
+    const fetchDashboard = async () => {
       try {
-        const result = await fetchDashboard(token);
-        setData(result);
+        const response = await api.get("dashboard/", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setData(response.data);
       } catch (error) {
-        console.error(error);
+        console.log(error);
       }
-    })();
+    };
+    fetchDashboard();
   }, []);
-
-  if (!data) return <Text>Loading...</Text>;
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.header}>Welcome, {data.profile.name}</Text>
-      <Text style={styles.section}>Your Courses:</Text>
-      {data.courses.map((c) => (
-        <Text key={c.id} style={styles.item}>📘 {c.name}</Text>
-      ))}
-      <Text style={styles.section}>Achievements:</Text>
-      {data.achievements.length === 0 ? (
-        <Text>No achievements yet</Text>
+      <Text style={styles.title}>📘 Dashboard</Text>
+      {data ? (
+        <View>
+          <Text>Name: {data.profile?.name}</Text>
+          <Text>Role: {data.profile?.role}</Text>
+          <Text>Courses: {data.courses?.length}</Text>
+          <Text>Achievements: {data.achievements?.length}</Text>
+        </View>
       ) : (
-        data.achievements.map((a) => <Text key={a.id}>🏅 {a.title}</Text>)
+        <Text>Loading...</Text>
       )}
+      <Button title="Logout" onPress={() => navigation.goBack()} />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  header: { fontSize: 22, fontWeight: 'bold', marginBottom: 10 },
-  section: { marginTop: 20, fontSize: 18, fontWeight: 'bold' },
-  item: { fontSize: 16, marginVertical: 4 },
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "#fff",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
 });
