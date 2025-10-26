@@ -250,17 +250,40 @@ def register(request):
     return render(request, "registration/register.html", {"form": form})
 
 
+# @login_required
+# def home_redirect(request):
+#     profile = getattr(request.user, "profile", None)
+#     if not profile:
+#         return redirect("login")
+#     if profile.role == "student":
+#         return redirect("student_dashboard")
+#     if profile.role == "lecturer":
+#         return redirect("lecturer_dashboard")
+#     if profile.role == "admin":
+#         return redirect("admin_dashboard")
+#     return redirect("login")
 @login_required
 def home_redirect(request):
-    profile = getattr(request.user, "profile", None)
-    if not profile:
-        return redirect("login")
-    if profile.role == "student":
-        return redirect("student_dashboard")
-    if profile.role == "lecturer":
-        return redirect("lecturer_dashboard")
-    if profile.role == "admin":
+    # Get or create a Profile for any user (including superuser)
+    profile, created = Profile.objects.get_or_create(user=request.user)
+    
+    # Ensure superuser always has Admin role
+    if request.user.is_superuser:
+        if profile.role.lower() != "admin":
+            profile.role = "admin"
+            profile.save()
         return redirect("admin_dashboard")
+
+    # Normal role-based redirects
+    role = profile.role.lower()
+    if role == "student":
+        return redirect("student_dashboard")
+    elif role == "lecturer":
+        return redirect("lecturer_dashboard")
+    elif role == "admin":
+        return redirect("admin_dashboard")
+
+    # Default fallback
     return redirect("login")
 
 
