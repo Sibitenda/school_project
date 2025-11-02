@@ -118,9 +118,13 @@ WSGI_APPLICATION = "school_project.wsgi.application"
 # LOGOUT_REDIRECT_URL = '/accounts/login/'
 # ------------
 
-# LOGIN_URL = "/accounts/login/"
-# LOGIN_REDIRECT_URL = "home"   # after login, go to home_redirect()
-# LOGOUT_REDIRECT_URL = "login"
+LOGIN_URL = "/accounts/login/"
+LOGIN_REDIRECT_URL = "/"   # after login, go to home_redirect()
+LOGOUT_REDIRECT_URL = "login"
+
+# LOGIN_URL = "/admin/login/"
+# LOGIN_REDIRECT_URL = "/"
+# LOGOUT_REDIRECT_URL = "/admin/login/"
 
 
 

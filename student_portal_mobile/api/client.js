@@ -13,12 +13,18 @@ export const loginUser = async (username, password) => {
   return response.data;
 };
 
+// export const fetchDashboard = async (token) => {
+//   const response = await api.get("/dashboard/", {
+//     headers: { Authorization: `Bearer ${token}` },
+//   });
+//   return response.data;
+// };
 export const fetchDashboard = async (token) => {
-  const response = await api.get("/dashboard/", {
+  return api.get("/dashboard/", {
     headers: { Authorization: `Bearer ${token}` },
-  });
-  return response.data;
+  }).then(res => res.data);
 };
+
 const BASE_URL = "https://school-project-dk22.onrender.com"; // Replace with your API base
 
 export async function fetchProfiles(token) {

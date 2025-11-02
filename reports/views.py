@@ -14,7 +14,7 @@ from django.conf import settings
 from django.core.mail import EmailMessage
 from django.contrib import messages
 from django.contrib.auth import login
-# from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required, user_passes_test
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 
@@ -316,31 +316,25 @@ def dashboard(request):
 #     # Default fallback
 #     return redirect("login")
 
-
-# @login_required
-# def home_redirect(request):
-#     profile = request.user.profile
-
-#     if profile.role == "admin":
-#         return redirect("admin_dashboard")
-#     elif profile.role == "lecturer":
-#         return redirect("lecturer_dashboard")
-#     else:
-#         return redirect("student_dashboard")
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@login_required(login_url="/accounts/login/")
 def home_redirect(request):
     profile = request.user.profile
 
-    if profile.role == "admin":
-        return redirect("/admin-dashboard/")
-    elif profile.role == "lecturer":
-        return redirect("/lecturer-dashboard/")
+    # normalize role just in case
+    role = profile.role.lower()
+
+    if role == "admin":
+        return redirect("admin_dashboard")
+    elif role == "lecturer":
+        return redirect("lecturer_dashboard")
+    elif role == "student":
+        return redirect("student_dashboard")
     else:
-        return redirect("/student-dashboard/")
+        return redirect("/accounts/login/")
+
 
 @login_required
-@permission_classes(student_required)
+@user_passes_test(student_required)
 def student_dashboard(request):
     profile = request.user.profile
     courses = Course.objects.filter(students=profile)
@@ -361,7 +355,7 @@ def student_dashboard(request):
 
 
 @login_required
-@permission_classes(lecturer_required)
+@user_passes_test(lecturer_required)
 def lecturer_dashboard(request):
     profile = request.user.profile
     try:
@@ -375,7 +369,7 @@ def lecturer_dashboard(request):
 # Admin Dashboard (main)
 # -------------------------------
 @login_required
-@permission_classes(admin_required)
+@user_passes_test(admin_required)
 def admin_dashboard(request):
     forms = {
         "user_form": AdminUserCreateForm(),
@@ -484,7 +478,7 @@ def admin_dashboard(request):
 # Export Marks CSV
 # -------------------------------
 @login_required
-@permission_classes(admin_required)
+@user_passes_test(admin_required)
 def export_marks_csv(request):
     buffer = io.StringIO()
     writer = csv.writer(buffer)
@@ -526,7 +520,7 @@ def export_marks_csv(request):
 # Download Processed Marksheet (concurrent)
 # -------------------------------
 @login_required
-@permission_classes(admin_required)
+@user_passes_test(admin_required)
 def download_processed_marks_csv(request):
     import pandas as pd
     import threading
@@ -603,7 +597,7 @@ def download_processed_marks_csv(request):
 # Generate reports (ZIP) - threaded, does NOT email inside threads
 # -------------------------------
 @login_required
-@permission_classes(admin_required)
+@user_passes_test(admin_required)
 def generate_student_reports_zip(request):
     start_time = time.time()
     students = Profile.objects.filter(role="student")
@@ -654,7 +648,7 @@ def generate_student_reports_zip(request):
 # Manual: Generate & Send all reports by email (triggered by button)
 # -------------------------------
 @login_required
-@permission_classes(admin_required)
+@user_passes_test(admin_required)
 def send_all_reports_email(request):
     """
     Generates each student's PDF and sends it by email.
