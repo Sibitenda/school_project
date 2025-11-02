@@ -316,11 +316,17 @@ def dashboard(request):
 #     # Default fallback
 #     return redirect("login")
 
-@login_required(login_url="/accounts/login/")
+@login_required
 def home_redirect(request):
-    profile = request.user.profile
+    user = request.user
 
-    # normalize role just in case
+    if user.is_superuser:
+        return redirect("/admin/")
+
+    profile = getattr(user, "profile", None)
+    if not profile:
+        return redirect("/admin/")  # safer fallback
+
     role = profile.role.lower()
 
     if role == "admin":
@@ -329,8 +335,8 @@ def home_redirect(request):
         return redirect("lecturer_dashboard")
     elif role == "student":
         return redirect("student_dashboard")
-    else:
-        return redirect("/accounts/login/")
+
+    return redirect("/admin/")  # final fallback
 
 
 @login_required
