@@ -1,3 +1,4 @@
+# reports/api/views.py
 from rest_framework import viewsets, permissions
 from .serializers import (
     ProfileSerializer, CourseSerializer, StudentMarkSerializer,
@@ -16,6 +17,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from reports.models import Profile, Course, StudentMark, Achievement, SupportTicket
 from reports.utils.grade_utils import calculate_gpa, calculate_cpa
+
+
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from reports.models import Profile, Course, StudentMark, Achievement
 
 class ProfileViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Profile.objects.all().select_related('user')
@@ -50,50 +58,44 @@ class CareerOpportunityViewSet(viewsets.ReadOnlyModelViewSet):
 # Student dashboard (aggregated)
 
 
+
 class DashboardViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
 
     def list(self, request):
-        """Return JSON dashboard data (for mobile app)."""
         user = request.user
         profile = getattr(user, "profile", None)
+        if not profile:
+            return Response({"error": "Profile not found."}, status=404)
 
-        # Admin dashboard summary
-        if profile and profile.role == "admin":
-            data = {
-                "profile": {"name": user.username, "role": "Admin"},
-                "summary": {
-                    "students": Profile.objects.filter(role="student").count(),
-                    "lecturers": Profile.objects.filter(role="lecturer").count(),
-                    "courses": Course.objects.count(),
-                    "marks": StudentMark.objects.count(),
-                    "achievements": Achievement.objects.count(),
-                    "tickets": SupportTicket.objects.count(),
-                },
+        data = {
+            "profile": {
+                "name": profile.name,
+                "role": profile.role.lower(),
             }
-            return Response(data)
+        }
+        
 
-        # Student dashboard details
-        elif profile and profile.role == "student":
-            marks = StudentMark.objects.filter(student=profile)
-            gpa = calculate_gpa(marks)
-            cpa = calculate_cpa(profile)
-            data = {
-                "profile": {"name": profile.name, "role": "Student"},
-                "gpa": gpa,
-                "cpa": cpa,
-                "marks": [
-                    {
-                        "course": m.course.name,
-                        "score": m.score,
-                        "grade": m.grade,
-                        "gpa": m.gpa,
-                    }
-                    for m in marks
-                ],
+        #  Role-specific content
+        if profile.role == "admin":
+            data["summary"] = {
+                "students": Profile.objects.filter(role="student").count(),
+                "lecturers": Profile.objects.filter(role="lecturer").count(),
+                "courses": Course.objects.count(),
+                "marks": StudentMark.objects.count(),
+                "achievements": Achievement.objects.count(),
+                "tickets": SupportTicket.objects.count(),
             }
-            return Response(data)
+        elif profile.role == "lecturer":
+            data["courses"] = Course.objects.filter(lecturer=profile).values("name", "code")
+            data["marks"] = StudentMark.objects.filter(lecturer=profile).values(
+                "student__name", "course__name", "score", "grade"
+            )
+        elif profile.role == "student":
+            data["marks"] = StudentMark.objects.filter(student=profile).values(
+                "course__name", "score", "grade", "gpa"
+            )
+            data["achievements"] = Achievement.objects.filter(student=profile).values("title", "description")
 
-        # Default fallback
-        return Response({"profile": {"name": user.username, "role": "Unknown"}})
+        return Response(data)
 
