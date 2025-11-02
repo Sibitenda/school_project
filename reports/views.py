@@ -48,6 +48,9 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
+
 
 
 # -------------------------------
@@ -286,29 +289,41 @@ def dashboard(request):
 #     if profile.role == "admin":
 #         return redirect("admin_dashboard")
 #     return redirect("login")
+# @login_required
+# def home_redirect(request):
+#     # Get or create a Profile for any user (including superuser)
+#     profile, created = Profile.objects.get_or_create(user=request.user)
+    
+#     # Ensure superuser always has Admin role
+#     if request.user.is_superuser:
+#         if profile.role.lower() != "admin":
+#             profile.role = "admin"
+#             profile.save()
+#         return redirect("admin_dashboard")
+
+#     # Normal role-based redirects
+#     role = profile.role.lower()
+#     if role == "student":
+#         return redirect("student_dashboard")
+#     elif role == "lecturer":
+#         return redirect("lecturer_dashboard")
+#     elif role == "admin":
+#         return redirect("admin_dashboard")
+
+#     # Default fallback
+#     return redirect("login")
+
+
 @login_required
 def home_redirect(request):
-    # Get or create a Profile for any user (including superuser)
-    profile, created = Profile.objects.get_or_create(user=request.user)
-    
-    # Ensure superuser always has Admin role
-    if request.user.is_superuser:
-        if profile.role.lower() != "admin":
-            profile.role = "admin"
-            profile.save()
-        return redirect("admin_dashboard")
+    profile = request.user.profile
 
-    # Normal role-based redirects
-    role = profile.role.lower()
-    if role == "student":
-        return redirect("student_dashboard")
-    elif role == "lecturer":
+    if profile.role == "admin":
+        return redirect("admin_dashboard")
+    elif profile.role == "lecturer":
         return redirect("lecturer_dashboard")
-    elif role == "admin":
-        return redirect("admin_dashboard")
-
-    # Default fallback
-    return redirect("login")
+    else:
+        return redirect("student_dashboard")
 
 
 @login_required
