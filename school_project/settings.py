@@ -116,14 +116,13 @@ WSGI_APPLICATION = "school_project.wsgi.application"
 # LOGIN_URL = "login"                # where users are redirected if not logged in
 # LOGIN_REDIRECT_URL = '/dashboard/'
 # LOGOUT_REDIRECT_URL = '/accounts/login/'
+# ------------
+
 # LOGIN_URL = "/accounts/login/"
 # LOGIN_REDIRECT_URL = "home"   # after login, go to home_redirect()
 # LOGOUT_REDIRECT_URL = "login"
 
-# Disable session-based login redirects (we use JWT instead)
-LOGIN_URL = None
-LOGIN_REDIRECT_URL = None
-LOGOUT_REDIRECT_URL = None
+
 
 # LOGIN_REDIRECT_URL = "dashboard"   # after successful login
 # LOGOUT_REDIRECT_URL = "login"      # after logout
